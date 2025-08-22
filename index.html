@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Projetos C#</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Meus Projetos</h2>
+            <button id="add-project-btn" class="add-btn">+ Adicionar Projeto</button>
+        </div>
+
+        <div class="filter-section">
+            <input type="text" id="filter-input" placeholder="Filtrar por nome, descrição ou tags">
+        </div>
+
+        <div id="project-list" class="project-list">
+            <!-- Projetos serão carregados aqui -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Criar Projeto</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="project-form">
+                <label for="project-name">Nome do Projeto:</label>
+                <input type="text" id="project-name" required>
+
+                <label for="project-path">Caminho:</label>
+                <input type="text" id="project-path" required>
+
+                <label for="project-description">Descrição:</label>
+                <textarea id="project-description"></textarea>
+
+                <label for="project-tags">Tags (separadas por vírgula):</label>
+                <input type="text" id="project-tags">
+
+                <label for="solution-name">Nome da Solução C# (opcional, para abrir no VS):</label>
+                <input type="text" id="solution-name">
+
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="cancel-btn">Cancelar</button>
+                    <button type="submit" id="submit-btn">Criar Projeto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
