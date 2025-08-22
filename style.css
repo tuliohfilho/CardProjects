@@ -320,6 +320,22 @@ body {
         flex: none;
     }
     
+    .project-card .actions button.open-folder {
+        background-color: #28a745;
+    }
+    
+    .project-card .actions button.open-vs {
+        background-color: #6f42c1;
+    }
+    
+    .project-card .actions button.edit-btn {
+        background-color: #ffc107;
+    }
+    
+    .project-card .actions button.delete-btn {
+        background-color: #dc3545;
+    }
+    
     .modal-content {
         margin: 10% auto;
         width: 95%;
@@ -329,4 +345,20 @@ body {
         flex-direction: column;
     }
 }
+
+.copy-icon {
+    cursor: pointer;
+    margin-left: 8px;
+    color: #007bff;
+    font-size: 14px;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.copy-icon:hover {
+    color: #0056b3;
+    transform: scale(1.1);
+}
+
 
