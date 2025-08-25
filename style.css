@@ -20,20 +20,39 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #e9ecef;
 }
 
 .header h2 {
-    color: #0056b3;
+    color: #007bff;
     margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.view-toggle-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.view-toggle-btn:hover {
+    background-color: #5a6268;
 }
 
 .add-btn {
     background-color: #007bff;
     color: white;
-    padding: 10px 20px;
     border: none;
+    padding: 12px 20px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
@@ -74,45 +93,101 @@ body {
     min-width: 150px;
 }
 
-.project-list {
+/* Grid View (Default) */
+.project-list.grid-view {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 20px;
 }
 
-.project-card {
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+/* List View */
+.project-list.list-view {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    gap: 15px;
 }
 
-.project-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.project-list.list-view .project-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.project-list.list-view .project-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.project-list.list-view .project-card h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #007bff;
+    min-width: 200px;
+}
+
+.project-list.list-view .project-card .path {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #666;
+    min-width: 250px;
+}
+
+.project-list.list-view .project-card p {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    flex: 1;
+}
+
+.project-list.list-view .project-card .tags {
+    margin: 0 15px 0 0;
+    min-width: 150px;
+}
+
+.project-list.list-view .project-card .actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.project-list.list-view .project-card .actions button {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Grid View Cards */
+.project-list.grid-view .project-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.project-list.grid-view .project-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .project-card h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
+    margin: 0 0 10px 0;
+    font-size: 20px;
     color: #007bff;
-    font-size: 1.2em;
+}
+
+.project-card .path {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+    word-break: break-all;
 }
 
 .project-card p {
     margin-bottom: 10px;
-    font-size: 0.9em;
-    line-height: 1.4;
-}
-
-.project-card .path {
-    word-break: break-all;
-    color: #666;
+    line-height: 1.5;
 }
 
 .project-card .tags {
@@ -144,49 +219,50 @@ body {
 }
 
 .project-card .actions button {
-    padding: 8px 12px;
+    flex: 1;
+    min-width: 120px;
+    padding: 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 14px;
+    font-weight: bold;
     transition: background-color 0.3s ease;
-    flex: 1;
-    min-width: 80px;
 }
 
-.project-card .actions .open-folder {
+.project-card .actions button.open-folder {
     background-color: #28a745;
     color: white;
 }
 
-.project-card .actions .open-folder:hover {
+.project-card .actions button.open-folder:hover {
     background-color: #218838;
 }
 
-.project-card .actions .open-vs {
+.project-card .actions button.open-vs {
     background-color: #6f42c1;
     color: white;
 }
 
-.project-card .actions .open-vs:hover {
-    background-color: #5a32a0;
+.project-card .actions button.open-vs:hover {
+    background-color: #5a32a3;
 }
 
-.project-card .actions .edit-btn {
+.project-card .actions button.edit-btn {
     background-color: #ffc107;
     color: #212529;
 }
 
-.project-card .actions .edit-btn:hover {
+.project-card .actions button.edit-btn:hover {
     background-color: #e0a800;
 }
 
-.project-card .actions .delete-btn {
+.project-card .actions button.delete-btn {
     background-color: #dc3545;
     color: white;
 }
 
-.project-card .actions .delete-btn:hover {
+.project-card .actions button.delete-btn:hover {
     background-color: #c82333;
 }
 
@@ -209,9 +285,8 @@ body {
     padding: 0;
     border-radius: 8px;
     width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     animation: slideIn 0.3s ease;
 }
 
@@ -220,12 +295,14 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0;
 }
 
 .modal-header h3 {
     margin: 0;
-    color: #0056b3;
+    color: #007bff;
 }
 
 .close {
@@ -236,8 +313,7 @@ body {
     line-height: 1;
 }
 
-.close:hover,
-.close:focus {
+.close:hover {
     color: #000;
 }
 
@@ -247,12 +323,12 @@ body {
 
 #project-form label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     font-weight: bold;
     color: #333;
 }
 
-#project-form input[type="text"],
+#project-form input,
 #project-form textarea {
     width: 100%;
     padding: 10px;
@@ -264,8 +340,8 @@ body {
 }
 
 #project-form textarea {
+    height: 80px;
     resize: vertical;
-    min-height: 80px;
 }
 
 .modal-actions {
@@ -280,7 +356,8 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
@@ -304,80 +381,26 @@ body {
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideIn {
-    from { 
+    from {
         opacity: 0;
         transform: translateY(-50px);
     }
-    to { 
+    to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
-    
-    .header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-    }
-    
-    .filter-controls {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .filter-controls select {
-        min-width: auto;
-    }
-    
-    .project-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .project-card .actions {
-        flex-direction: column;
-    }
-    
-    .project-card .actions button {
-        flex: none;
-    }
-    
-    .project-card .actions button.open-folder {
-        background-color: #28a745;
-    }
-    
-    .project-card .actions button.open-vs {
-        background-color: #6f42c1;
-    }
-    
-    .project-card .actions button.edit-btn {
-        background-color: #ffc107;
-    }
-    
-    .project-card .actions button.delete-btn {
-        background-color: #dc3545;
-    }
-    
-    .modal-content {
-        margin: 10% auto;
-        width: 95%;
-    }
-    
-    .modal-actions {
-        flex-direction: column;
-    }
-}
-
+/* Copy Icon Styles */
 .copy-icon {
     cursor: pointer;
     margin-left: 8px;
@@ -393,4 +416,63 @@ body {
     transform: scale(1.1);
 }
 
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .header-actions {
+        justify-content: space-between;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .filter-controls select {
+        min-width: auto;
+    }
+    
+    .project-list.grid-view {
+        grid-template-columns: 1fr;
+    }
+    
+    .project-list.list-view .project-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .project-list.list-view .project-card h3,
+    .project-list.list-view .project-card .path,
+    .project-list.list-view .project-card .tags {
+        min-width: auto;
+        margin-bottom: 10px;
+    }
+    
+    .project-card .actions {
+        flex-direction: column;
+    }
+    
+    .project-card .actions button {
+        flex: none;
+        min-width: auto;
+    }
+    
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+}
 

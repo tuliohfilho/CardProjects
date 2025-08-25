@@ -9,9 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterInput = document.getElementById("filter-input");
     const filterTypeSelect = document.getElementById("filter-type");
     const projectList = document.getElementById("project-list");
+    const viewToggleBtn = document.getElementById("view-toggle-btn");
 
     let projects = [];
     let editingProjectId = null;
+    let currentView = "grid"; // 'grid' ou 'list'
 
     // Função para carregar projetos do localStorage
     const loadProjects = () => {
@@ -30,22 +32,26 @@ document.addEventListener("DOMContentLoaded", () => {
     // Função para renderizar os projetos na tela
     const renderProjects = (filter = "", filterType = "all") => {
         projectList.innerHTML = "";
+        projectList.className = `project-list ${currentView}-view`; // Adiciona classe de visualização
+
         const filteredProjects = projects.filter(project => {
-            const searchTerm = filter.toLowerCase();
-            if (!searchTerm) return true; // Se o filtro estiver vazio, mostra todos
+            const searchTerms = filter.toLowerCase().split(/[,\s]+/).filter(term => term !== "");
+            if (searchTerms.length === 0) return true; // Se o filtro estiver vazio, mostra todos
 
             switch (filterType) {
                 case "name":
-                    return project.name.toLowerCase().includes(searchTerm);
+                    return searchTerms.some(term => project.name.toLowerCase().includes(term));
                 case "path":
-                    return project.path.toLowerCase().includes(searchTerm);
+                    return searchTerms.some(term => project.path.toLowerCase().includes(term));
                 case "tags":
-                    return project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                    return searchTerms.some(term => project.tags.some(tag => tag.toLowerCase().includes(term)));
                 case "all":
                 default:
-                    return project.name.toLowerCase().includes(searchTerm) ||
-                           project.description.toLowerCase().includes(searchTerm) ||
-                           project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                    return searchTerms.some(term => 
+                        project.name.toLowerCase().includes(term) ||
+                        project.description.toLowerCase().includes(term) ||
+                        project.tags.some(tag => tag.toLowerCase().includes(term))
+                    );
             }
         });
 
@@ -86,7 +92,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".tag-item").forEach(tagItem => {
             tagItem.onclick = (e) => {
                 e.stopPropagation();
-                filterInput.value = tagItem.dataset.tag;
+                const currentFilter = filterInput.value.toLowerCase();
+                const clickedTag = tagItem.dataset.tag.toLowerCase();
+                
+                // Adiciona a tag clicada ao filtro, se já não estiver lá
+                if (!currentFilter.includes(clickedTag)) {
+                    filterInput.value = currentFilter ? `${currentFilter}, ${clickedTag}` : clickedTag;
+                }
                 filterTypeSelect.value = "tags";
                 renderProjects(filterInput.value, filterTypeSelect.value);
             };
@@ -132,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = document.getElementById("project-name").value;
         const path = document.getElementById("project-path").value;
         const description = document.getElementById("project-description").value;
-        const tags = document.getElementById("project-tags").value.split(",").map(tag => tag.trim()).filter(tag => tag !== "");
+        const tags = document.getElementById("project-tags").value.split(/[,\s]+/).map(tag => tag.trim()).filter(tag => tag !== "");
         const solutionName = document.getElementById("solution-name").value;
 
         if (editingProjectId) {
@@ -176,12 +188,24 @@ document.addEventListener("DOMContentLoaded", () => {
         renderProjects(filterInput.value, filterTypeSelect.value);
     });
 
+    // Event listener para o botão de alternar visualização
+    viewToggleBtn.addEventListener("click", () => {
+        currentView = currentView === "grid" ? "list" : "grid";
+        viewToggleBtn.textContent = currentView === "grid" ? "Visualização em Lista" : "Visualização em Cards";
+        renderProjects(filterInput.value, filterTypeSelect.value);
+    });
+
     // Funções globais para serem acessadas pelos botões nos cards
     window.openFolder = (path) => {
+        // Tenta abrir a pasta diretamente no explorador de arquivos
+        // Note: Isso só funciona em ambientes que permitem (ex: Electron, extensões de navegador específicas)
+        // Em navegadores padrão, isso será bloqueado por segurança.
         const formattedPath = path.replace(/\\/g, "/"); // Substitui \ por /
         try {
-            window.open(formattedPath, "_blank");
+            // Tentativa de abrir diretamente (pode não funcionar em todos os navegadores/SO)
+            window.open(`file:///${formattedPath}`, "_blank");
         } catch (e) {
+            // Fallback para copiar para a área de transferência
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(path).then(() => {
                     alert(`Caminho copiado para área de transferência: ${path}\n\nPara abrir a pasta, cole este caminho no explorador de arquivos.`);
@@ -195,31 +219,49 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.openVS = (path, projectName, solutionName) => {
-        let finalSolutionPath = path;
         let effectiveSolutionName = solutionName || projectName; // Usa solutionName se existir, senão o nome do projeto
-
-        if (effectiveSolutionName) {
-            if (!effectiveSolutionName.toLowerCase().endsWith(".sln")) {
-                finalSolutionPath = `${path}\\${effectiveSolutionName}.sln`;
-            } else {
-                finalSolutionPath = `${path}\\${effectiveSolutionName}`;
-            }
-        }
         
-        const formattedPath = finalSolutionPath.replace(/\\/g, "/"); // Substitui \ por /
-        const command = `devenv "${formattedPath}"`;
+        // Garante que o nome da solução termine com .sln
+        if (effectiveSolutionName && !effectiveSolutionName.toLowerCase().endsWith(".sln")) {
+            effectiveSolutionName += ".sln";
+        }
 
+        const fullSolutionPath = `${path}\\${effectiveSolutionName}`;
+        const formattedSolutionPath = fullSolutionPath.replace(/\\/g, "/"); // Substitui \ por /
+
+        // Comando para abrir no Visual Studio (devenv)
+        const devenvCommand = `devenv "${fullSolutionPath}"`;
+
+        // Comando para abrir a pasta no VS Code
+        const vscodeCommand = `code "${path}"`;
+
+        // Tenta abrir no Visual Studio (completo) via URI scheme (se configurado)
         try {
-            window.open(`vscode://file/${formattedPath}`, "_blank"); // Tenta abrir com VS Code URI
+            window.open(`vs-code://file/${formattedSolutionPath}`, "_blank"); // Tenta abrir com VS Code URI
+            // Se o usuário tiver o VS Code configurado para abrir .sln, isso pode funcionar.
+            // Caso contrário, o fallback será para o devenv ou cópia.
         } catch (e) {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(command).then(() => {
-                    alert(`Comando copiado para área de transferência: ${command}\n\nPara abrir no Visual Studio, cole e execute este comando no Prompt de Comando ou PowerShell.`);
-                }).catch(() => {
-                    alert(`Não foi possível abrir o Visual Studio. Copie o comando manualmente: ${command}`);
-                });
-            } else {
-                alert(`Não foi possível abrir o Visual Studio. Copie o comando manualmente: ${command}`);
+            // Fallback para copiar o comando devenv ou vscode para a área de transferência
+            if (confirm(`Não foi possível abrir diretamente. Deseja copiar o comando para abrir no Visual Studio (OK) ou no VS Code (Cancelar)?`)) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(devenvCommand).then(() => {
+                        alert(`Comando copiado para área de transferência: ${devenvCommand}\n\nPara abrir no Visual Studio, cole e execute este comando no Prompt de Comando ou PowerShell.`);
+                    }).catch(() => {
+                        alert(`Não foi possível copiar o comando. Copie manualmente: ${devenvCommand}`);
+                    });
+                } else {
+                    alert(`Não foi possível copiar o comando. Copie manualmente: ${devenvCommand}`);
+                }
+            } else { // Usuário escolheu VS Code
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(vscodeCommand).then(() => {
+                        alert(`Comando copiado para área de transferência: ${vscodeCommand}\n\nPara abrir a pasta no VS Code, cole e execute este comando no terminal.`);
+                    }).catch(() => {
+                        alert(`Não foi possível copiar o comando. Copie manualmente: ${vscodeCommand}`);
+                    });
+                } else {
+                    alert(`Não foi possível copiar o comando. Copie manualmente: ${vscodeCommand}`);
+                }
             }
         }
     };
