@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelBtn = document.getElementById("cancel-btn");
     const closeBtn = document.querySelector(".close");
     const filterInput = document.getElementById("filter-input");
+    const filterTypeSelect = document.getElementById("filter-type");
     const projectList = document.getElementById("project-list");
 
     let projects = [];
@@ -27,13 +28,25 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Função para renderizar os projetos na tela
-    const renderProjects = (filter = "") => {
+    const renderProjects = (filter = "", filterType = "all") => {
         projectList.innerHTML = "";
         const filteredProjects = projects.filter(project => {
             const searchTerm = filter.toLowerCase();
-            return project.name.toLowerCase().includes(searchTerm) ||
-                   project.description.toLowerCase().includes(searchTerm) ||
-                   project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+            if (!searchTerm) return true; // Se o filtro estiver vazio, mostra todos
+
+            switch (filterType) {
+                case "name":
+                    return project.name.toLowerCase().includes(searchTerm);
+                case "path":
+                    return project.path.toLowerCase().includes(searchTerm);
+                case "tags":
+                    return project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                case "all":
+                default:
+                    return project.name.toLowerCase().includes(searchTerm) ||
+                           project.description.toLowerCase().includes(searchTerm) ||
+                           project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+            }
         });
 
         if (filteredProjects.length === 0) {
@@ -49,10 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <h3>${project.name} <span class="copy-icon" data-copy="${project.name}">📋</span></h3>
                 <p class="path"><strong>Caminho:</strong> ${project.path} <span class="copy-icon" data-copy="${project.path}">📋</span></p>
                 <p><strong>Descrição:</strong> ${project.description || "Sem descrição"}</p>
-                <div class="tags"><strong>Tags:</strong> ${project.tags.map(tag => `<span>${tag}</span>`).join("")}</div>
+                <div class="tags"><strong>Tags:</strong> ${project.tags.map(tag => `<span class="tag-item" data-tag="${tag}">${tag}</span>`).join("")}</div>
                 <div class="actions">
-                    <button class="open-folder" onclick="openFolder(\'${project.path}\')">Abrir Pasta</button>
-                    ${project.solutionName ? `<button class="open-vs" onclick="openVS(\'${project.path}\', \'${project.solutionName}\')">Abrir no VS</button>` : ""}
+                    <button class="open-folder" onclick="openFolder(\'${project.path.replace(/\\/g, '\\\\')}\')">Abrir Pasta</button>
+                    <button class="open-vs" onclick="openVS(\'${project.path.replace(/\\/g, '\\\\')}\', \'${project.name.replace(/\\/g, '\\\\')}\', \'${project.solutionName.replace(/\\/g, '\\\\') || ''}\')">Abrir no VS</button>
                     <button class="edit-btn" onclick="editProject(${project.id})">Editar</button>
                     <button class="delete-btn" onclick="deleteProject(${project.id})">Excluir</button>
                 </div>
@@ -66,6 +79,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.stopPropagation();
                 navigator.clipboard.writeText(icon.dataset.copy);
                 alert("Copiado para a área de transferência!");
+            };
+        });
+
+        // Add event listeners for clickable tags
+        document.querySelectorAll(".tag-item").forEach(tagItem => {
+            tagItem.onclick = (e) => {
+                e.stopPropagation();
+                filterInput.value = tagItem.dataset.tag;
+                filterTypeSelect.value = "tags";
+                renderProjects(filterInput.value, filterTypeSelect.value);
             };
         });
     };
@@ -139,22 +162,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         saveProjects();
-        renderProjects(filterInput.value);
+        renderProjects(filterInput.value, filterTypeSelect.value);
         closeModal();
     });
 
     // Event listener para o campo de filtro
-    filterInput.addEventListener("input", (e) => {
-        renderProjects(e.target.value);
+    filterInput.addEventListener("input", () => {
+        renderProjects(filterInput.value, filterTypeSelect.value);
+    });
+
+    // Event listener para o tipo de filtro
+    filterTypeSelect.addEventListener("change", () => {
+        renderProjects(filterInput.value, filterTypeSelect.value);
     });
 
     // Funções globais para serem acessadas pelos botões nos cards
     window.openFolder = (path) => {
-        // Tenta abrir a pasta diretamente. Isso só funcionará em ambientes como Electron.
-        // Em navegadores, a segurança impede a abertura direta de arquivos/pastas locais.
-        // A alternativa é copiar o caminho para a área de transferência.
+        const formattedPath = path.replace(/\\/g, "/"); // Substitui \ por /
         try {
-            window.open(path, "_blank"); // Tenta abrir como URL
+            window.open(formattedPath, "_blank");
         } catch (e) {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(path).then(() => {
@@ -168,10 +194,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    window.openVS = (path, solutionName) => {
+    window.openVS = (path, projectName, solutionName) => {
         let finalSolutionPath = path;
-        const projectName = path.split(/[\\/]/).pop(); // Pega o último segmento do caminho como nome do projeto
-
         let effectiveSolutionName = solutionName || projectName; // Usa solutionName se existir, senão o nome do projeto
 
         if (effectiveSolutionName) {
@@ -181,13 +205,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 finalSolutionPath = `${path}\\${effectiveSolutionName}`;
             }
         }
+        
+        const formattedPath = finalSolutionPath.replace(/\\/g, "/"); // Substitui \ por /
+        const command = `devenv "${formattedPath}"`;
 
-        // Tenta abrir o Visual Studio. Isso só funcionará em ambientes como Electron.
-        // Em navegadores, a segurança impede a execução direta de programas locais.
-        // A alternativa é copiar o comando para a área de transferência.
-        const command = `devenv "${finalSolutionPath}"`;
         try {
-            window.open(`vscode://file/${finalSolutionPath}`, "_blank"); // Tenta abrir com VS Code URI
+            window.open(`vscode://file/${formattedPath}`, "_blank"); // Tenta abrir com VS Code URI
         } catch (e) {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(command).then(() => {
@@ -213,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (project && confirm(`Tem certeza que deseja excluir o projeto "${project.name}"?`)) {
             projects = projects.filter(p => p.id !== id);
             saveProjects();
-            renderProjects(filterInput.value);
+            renderProjects(filterInput.value, filterTypeSelect.value);
         }
     };
 
