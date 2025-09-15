@@ -32,11 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Função para renderizar os projetos na tela
     const renderProjects = (filter = "", filterType = "all") => {
         projectList.innerHTML = "";
-        projectList.className = `project-list ${currentView}-view`; // Adiciona classe de visualização
+        projectList.className = `project-list ${currentView}-view`;
+
+        // Atualiza o ícone do botão de visualização
+        viewToggleBtn.className = `view-toggle-icon ${currentView}-view`;
 
         const filteredProjects = projects.filter(project => {
             const searchTerms = filter.toLowerCase().split(/[,\s]+/).filter(term => term !== "");
-            if (searchTerms.length === 0) return true; // Se o filtro estiver vazio, mostra todos
+            if (searchTerms.length === 0) return true;
 
             switch (filterType) {
                 case "name":
@@ -64,45 +67,133 @@ document.addEventListener("DOMContentLoaded", () => {
         filteredProjects.forEach(project => {
             const projectCard = document.createElement("div");
             projectCard.classList.add("project-card");
-            projectCard.innerHTML = `
-                <h3>${project.name} <span class="copy-icon" data-copy="${project.name}">📋</span></h3>
-                <p class="path"><strong>Caminho:</strong> ${project.path} <span class="copy-icon" data-copy="${project.path}">📋</span></p>
-                <p><strong>Descrição:</strong> ${project.description || "Sem descrição"}</p>
-                <div class="tags"><strong>Tags:</strong> ${project.tags.map(tag => `<span class="tag-item" data-tag="${tag}">${tag}</span>`).join("")}</div>
-                <div class="actions">
-                    <button class="open-folder" onclick="openFolder(\'${project.path.replace(/\\/g, '\\\\')}\')">Abrir Pasta</button>
-                    <button class="open-vs" onclick="openVS(\'${project.path.replace(/\\/g, '\\\\')}\', \'${project.name.replace(/\\/g, '\\\\')}\', \'${project.solutionName.replace(/\\/g, '\\\\') || ''}\')">Abrir no VS</button>
-                    <button class="edit-btn" onclick="editProject(${project.id})">Editar</button>
-                    <button class="delete-btn" onclick="deleteProject(${project.id})">Excluir</button>
-                </div>
-            `;
+            projectCard.dataset.id = project.id;
+            
+            if (currentView === "list") {
+                projectCard.innerHTML = `
+                    <div class="card-info">
+                        <div class="card-title">
+                            <h3>${project.name}</h3>
+                            <span class="copy-icon" onclick="copyToClipboard('${project.name}')" title="Copiar nome">📋</span>
+                        </div>
+                        <p class="path">
+                            ${project.path}
+                            <span class="copy-icon" onclick="copyToClipboard('${project.path}')" title="Copiar caminho">📋</span>
+                        </p>
+                        <p class="description">${project.description || "Sem descrição"}</p>
+                    </div>
+                    <div class="tags">
+                        ${project.tags.map(tag => `<span onclick="filterByTag('${tag}')">${tag}</span>`).join('')}
+                    </div>
+                    <div class="actions">
+                        <button class="open-folder" onclick="openFolder('${project.path.replace(/\\/g, '\\\\')}')">📁 Abrir Pasta</button>
+                        <button class="open-vs" onclick="openInVS('${project.path.replace(/\\/g, '\\\\')}', '${project.solutionName || project.name}')">💻 Abrir no VS</button>
+                        <button class="edit-btn" onclick="editProject(${project.id})">✏️ Editar</button>
+                        <button class="delete-btn" onclick="deleteProject(${project.id})">🗑️ Excluir</button>
+                    </div>
+                `;
+            } else {
+                projectCard.innerHTML = `
+                    <h3>${project.name} <span class="copy-icon" onclick="copyToClipboard('${project.name}')" title="Copiar nome">📋</span></h3>
+                    <p class="path"><strong>Caminho:</strong> ${project.path} <span class="copy-icon" onclick="copyToClipboard('${project.path}')" title="Copiar caminho">📋</span></p>
+                    <p><strong>Descrição:</strong> ${project.description || "Sem descrição"}</p>
+                    <div class="tags"><strong>Tags:</strong> ${project.tags.map(tag => `<span onclick="filterByTag('${tag}')">${tag}</span>`).join("")}</div>
+                    <div class="actions">
+                        <button class="open-folder" onclick="openFolder('${project.path.replace(/\\/g, '\\\\')}')">Abrir Pasta</button>
+                        <button class="open-vs" onclick="openInVS('${project.path.replace(/\\/g, '\\\\')}', '${project.solutionName || project.name}')">Abrir no VS</button>
+                        <button class="edit-btn" onclick="editProject(${project.id})">Editar</button>
+                        <button class="delete-btn" onclick="deleteProject(${project.id})">Excluir</button>
+                    </div>
+                `;
+            }
             projectList.appendChild(projectCard);
         });
+    };
 
-        // Add event listeners for copy icons
-        document.querySelectorAll(".copy-icon").forEach(icon => {
-            icon.onclick = (e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(icon.dataset.copy);
-                alert("Copiado para a área de transferência!");
-            };
+    // Função para copiar texto para área de transferência
+    window.copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copiado para a área de transferência!");
+        }).catch(() => {
+            alert("Erro ao copiar para a área de transferência.");
         });
+    };
 
-        // Add event listeners for clickable tags
-        document.querySelectorAll(".tag-item").forEach(tagItem => {
-            tagItem.onclick = (e) => {
-                e.stopPropagation();
-                const currentFilter = filterInput.value.toLowerCase();
-                const clickedTag = tagItem.dataset.tag.toLowerCase();
-                
-                // Adiciona a tag clicada ao filtro, se já não estiver lá
-                if (!currentFilter.includes(clickedTag)) {
-                    filterInput.value = currentFilter ? `${currentFilter}, ${clickedTag}` : clickedTag;
-                }
-                filterTypeSelect.value = "tags";
-                renderProjects(filterInput.value, filterTypeSelect.value);
-            };
-        });
+    // Função para filtrar por tag clicada
+    window.filterByTag = (tag) => {
+        const currentFilter = filterInput.value.toLowerCase();
+        const clickedTag = tag.toLowerCase();
+        
+        if (!currentFilter.includes(clickedTag)) {
+            filterInput.value = currentFilter ? `${currentFilter}, ${clickedTag}` : clickedTag;
+        }
+        filterTypeSelect.value = "tags";
+        renderProjects(filterInput.value, filterTypeSelect.value);
+    };
+
+    // Função para abrir pasta
+    window.openFolder = (path) => {
+        const normalizedPath = path.replace(/\\\\/g, '/');
+        
+        try {
+            window.open(`file:///${normalizedPath}`, '_blank');
+        } catch (error) {
+            copyToClipboard(normalizedPath);
+            alert(`Não foi possível abrir a pasta diretamente. Caminho copiado: ${normalizedPath}`);
+        }
+    };
+
+    // Função para abrir no Visual Studio/VS Code
+    window.openInVS = (projectPath, solutionName) => {
+        const normalizedPath = projectPath.replace(/\\\\/g, '/');
+        let finalSolutionName = solutionName || '';
+        
+        if (!finalSolutionName) {
+            finalSolutionName = projectPath.split(/[\\\/]/).pop();
+        }
+        
+        if (!finalSolutionName.endsWith('.sln')) {
+            finalSolutionName += '.sln';
+        }
+        
+        const solutionPath = `${normalizedPath}/${finalSolutionName}`;
+        
+        const choice = confirm("Clique em OK para abrir no Visual Studio ou Cancelar para abrir no VS Code");
+        
+        if (choice) {
+            // Visual Studio
+            try {
+                window.open(`devenv "${solutionPath}"`, '_blank');
+            } catch (error) {
+                copyToClipboard(`devenv "${solutionPath}"`);
+                alert(`Comando copiado para área de transferência: devenv "${solutionPath}"`);
+            }
+        } else {
+            // VS Code
+            try {
+                window.open(`code "${normalizedPath}"`, '_blank');
+            } catch (error) {
+                copyToClipboard(`code "${normalizedPath}"`);
+                alert(`Comando copiado para área de transferência: code "${normalizedPath}"`);
+            }
+        }
+    };
+
+    // Função para editar projeto
+    window.editProject = (id) => {
+        const project = projects.find(p => p.id === id);
+        if (project) {
+            openModal(true, project);
+        }
+    };
+
+    // Função para excluir projeto
+    window.deleteProject = (id) => {
+        if (confirm("Tem certeza que deseja excluir este projeto?")) {
+            projects = projects.filter(p => p.id !== id);
+            saveProjects();
+            renderProjects(filterInput.value, filterTypeSelect.value);
+        }
     };
 
     // Função para abrir o modal
@@ -137,6 +228,28 @@ document.addEventListener("DOMContentLoaded", () => {
     addProjectBtn.addEventListener("click", () => openModal());
     cancelBtn.addEventListener("click", closeModal);
     closeBtn.addEventListener("click", closeModal);
+
+    // Alternar visualização
+    viewToggleBtn.addEventListener("click", () => {
+        currentView = currentView === "grid" ? "list" : "grid";
+        renderProjects(filterInput.value, filterTypeSelect.value);
+    });
+
+    // Filtros
+    filterInput.addEventListener("input", () => {
+        renderProjects(filterInput.value, filterTypeSelect.value);
+    });
+
+    filterTypeSelect.addEventListener("change", () => {
+        renderProjects(filterInput.value, filterTypeSelect.value);
+    });
+
+    // Fechar modal clicando fora
+    window.addEventListener("click", (e) => {
+        if (e.target === projectModal) {
+            closeModal();
+        }
+    });
 
     projectForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -178,112 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeModal();
     });
 
-    // Event listener para o campo de filtro
-    filterInput.addEventListener("input", () => {
-        renderProjects(filterInput.value, filterTypeSelect.value);
-    });
-
-    // Event listener para o tipo de filtro
-    filterTypeSelect.addEventListener("change", () => {
-        renderProjects(filterInput.value, filterTypeSelect.value);
-    });
-
-    // Event listener para o botão de alternar visualização
-    viewToggleBtn.addEventListener("click", () => {
-        currentView = currentView === "grid" ? "list" : "grid";
-        viewToggleBtn.textContent = currentView === "grid" ? "Visualização em Lista" : "Visualização em Cards";
-        renderProjects(filterInput.value, filterTypeSelect.value);
-    });
-
-    // Funções globais para serem acessadas pelos botões nos cards
-    window.openFolder = (path) => {
-        // Tenta abrir a pasta diretamente no explorador de arquivos
-        // Note: Isso só funciona em ambientes que permitem (ex: Electron, extensões de navegador específicas)
-        // Em navegadores padrão, isso será bloqueado por segurança.
-        const formattedPath = path.replace(/\\/g, "/"); // Substitui \ por /
-        try {
-            // Tentativa de abrir diretamente (pode não funcionar em todos os navegadores/SO)
-            window.open(`file:///${formattedPath}`, "_blank");
-        } catch (e) {
-            // Fallback para copiar para a área de transferência
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(path).then(() => {
-                    alert(`Caminho copiado para área de transferência: ${path}\n\nPara abrir a pasta, cole este caminho no explorador de arquivos.`);
-                }).catch(() => {
-                    alert(`Não foi possível abrir a pasta. Copie o caminho manualmente: ${path}`);
-                });
-            } else {
-                alert(`Não foi possível abrir a pasta. Copie o caminho manualmente: ${path}`);
-            }
-        }
-    };
-
-    window.openVS = (path, projectName, solutionName) => {
-        let effectiveSolutionName = solutionName || projectName; // Usa solutionName se existir, senão o nome do projeto
-        
-        // Garante que o nome da solução termine com .sln
-        if (effectiveSolutionName && !effectiveSolutionName.toLowerCase().endsWith(".sln")) {
-            effectiveSolutionName += ".sln";
-        }
-
-        const fullSolutionPath = `${path}\\${effectiveSolutionName}`;
-        const formattedSolutionPath = fullSolutionPath.replace(/\\/g, "/"); // Substitui \ por /
-
-        // Comando para abrir no Visual Studio (devenv)
-        const devenvCommand = `devenv "${fullSolutionPath}"`;
-
-        // Comando para abrir a pasta no VS Code
-        const vscodeCommand = `code "${path}"`;
-
-        // Tenta abrir no Visual Studio (completo) via URI scheme (se configurado)
-        try {
-            window.open(`vs-code://file/${formattedSolutionPath}`, "_blank"); // Tenta abrir com VS Code URI
-            // Se o usuário tiver o VS Code configurado para abrir .sln, isso pode funcionar.
-            // Caso contrário, o fallback será para o devenv ou cópia.
-        } catch (e) {
-            // Fallback para copiar o comando devenv ou vscode para a área de transferência
-            if (confirm(`Não foi possível abrir diretamente. Deseja copiar o comando para abrir no Visual Studio (OK) ou no VS Code (Cancelar)?`)) {
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(devenvCommand).then(() => {
-                        alert(`Comando copiado para área de transferência: ${devenvCommand}\n\nPara abrir no Visual Studio, cole e execute este comando no Prompt de Comando ou PowerShell.`);
-                    }).catch(() => {
-                        alert(`Não foi possível copiar o comando. Copie manualmente: ${devenvCommand}`);
-                    });
-                } else {
-                    alert(`Não foi possível copiar o comando. Copie manualmente: ${devenvCommand}`);
-                }
-            } else { // Usuário escolheu VS Code
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(vscodeCommand).then(() => {
-                        alert(`Comando copiado para área de transferência: ${vscodeCommand}\n\nPara abrir a pasta no VS Code, cole e execute este comando no terminal.`);
-                    }).catch(() => {
-                        alert(`Não foi possível copiar o comando. Copie manualmente: ${vscodeCommand}`);
-                    });
-                } else {
-                    alert(`Não foi possível copiar o comando. Copie manualmente: ${vscodeCommand}`);
-                }
-            }
-        }
-    };
-
-    window.editProject = (id) => {
-        const project = projects.find(p => p.id === id);
-        if (project) {
-            openModal(true, project);
-        }
-    };
-
-    window.deleteProject = (id) => {
-        const project = projects.find(p => p.id === id);
-        if (project && confirm(`Tem certeza que deseja excluir o projeto "${project.name}"?`)) {
-            projects = projects.filter(p => p.id !== id);
-            saveProjects();
-            renderProjects(filterInput.value, filterTypeSelect.value);
-        }
-    };
-
-    // Carregar projetos ao iniciar
+    // Carregar projetos ao inicializar
     loadProjects();
 });
-
 

@@ -19,9 +19,10 @@ Um aplicativo web avançado para gerenciar projetos C# com funcionalidades compl
 
 ### 🎨 Visualizações Flexíveis
 - **Visualização em Cards**: Layout em grid responsivo (padrão)
-- **Visualização em Lista**: Layout linear compacto
-- **Alternância Rápida**: Botão para alternar entre visualizações
+- **Visualização em Lista**: Layout linear compacto com scroll
+- **Alternância Rápida**: Botão discreto com ícones para alternar entre visualizações
 - **Design Responsivo**: Adapta-se automaticamente a diferentes telas
+- **Scroll Inteligente**: Lista com altura fixa e scroll automático quando necessário
 
 ### 🛠️ Integração com Ferramentas
 - **Abrir Pasta**: Abre o caminho do projeto no explorador de arquivos
@@ -42,16 +43,26 @@ Um aplicativo web avançado para gerenciar projetos C# com funcionalidades compl
 ### Layout Moderno
 - **Design Responsivo**: Funciona em desktop e mobile
 - **Cards Organizados**: Projetos exibidos em cards limpos e organizados
-- **Lista Compacta**: Visualização linear para máxima eficiência
+- **Lista Compacta**: Visualização linear para máxima eficiência com scroll
 - **Modal Elegante**: Popup para criar/editar projetos com animações suaves
-- **Cores Intuitivas**: Botões coloridos por função (verde=pasta, roxo=VS, amarelo=editar, vermelho=excluir)
+- **Botão de Visualização Discreto**: Ícone pequeno e elegante para alternar visualizações
+- **Ícones de Ação**: Na visualização em lista, botões são substituídos por ícones intuitivos
 
 ### Experiência do Usuário
 - **Filtro Integrado**: Campo de busca e seletor de tipo na área principal
 - **Tags Visuais**: Tags coloridas e clicáveis para fácil navegação
 - **Mensagens Informativas**: "Nenhum projeto encontrado" quando filtros não retornam resultados
 - **Confirmações**: Diálogos de confirmação para ações destrutivas
-- **Alternância de Visualização**: Botão para trocar entre cards e lista
+- **Alternância Suave**: Transição fluida entre visualizações
+- **Scroll Otimizado**: Lista com scroll personalizado e altura fixa
+
+### Visualização em Lista
+- **Layout Horizontal**: Nome e descrição na primeira linha
+- **Informações Secundárias**: Caminho e tags na segunda linha
+- **Ícones de Ação**: 📁 (Abrir Pasta), 💻 (Abrir no VS), ✏️ (Editar), 🗑️ (Excluir)
+- **Hover Effects**: Destaque visual ao passar o mouse
+- **Scroll Customizado**: Barra de rolagem estilizada
+- **Altura Fixa**: Máximo de 600px com scroll automático
 
 ## 📁 Estrutura do Projeto
 
@@ -81,9 +92,9 @@ gerenciador-projetos-csharp/
 3. Clique em **"Criar Projeto"**
 
 ### 3. Alternando Visualizações
-- **Botão de Visualização**: Clique para alternar entre "Cards" e "Lista"
+- **Botão de Visualização**: Ícone discreto (⊞/☰) ao lado do filtro
 - **Cards**: Layout em grid com informações completas
-- **Lista**: Layout linear compacto para navegação rápida
+- **Lista**: Layout linear compacto com ícones de ação
 
 ### 4. Filtrando Projetos
 1. Use o campo de busca para filtrar projetos
@@ -96,8 +107,8 @@ gerenciador-projetos-csharp/
 4. **Tags Clicáveis**: Clique diretamente em qualquer tag para filtrar
 
 ### 5. Abrindo Projetos
-- **Abrir Pasta**: Clique para abrir o caminho no explorador de arquivos
-- **Abrir no VS**: Escolha entre Visual Studio (OK) ou VS Code (Cancelar)
+- **Abrir Pasta**: Clique no ícone 📁 para abrir o caminho no explorador
+- **Abrir no VS**: Clique no ícone 💻 para escolher entre Visual Studio ou VS Code
 - **Copiar Informações**: Clique nos ícones 📋 para copiar nome ou caminho
 
 ## ⚙️ Configurações Técnicas
@@ -119,6 +130,12 @@ gerenciador-projetos-csharp/
 - **Busca Inteligente**: Encontra projetos que contenham qualquer um dos termos
 - **Tags Clicáveis**: Adiciona automaticamente ao filtro existente
 - **Filtro Cumulativo**: Permite construir filtros complexos clicando em várias tags
+
+### Visualizações
+- **Grid View**: Layout padrão em cards responsivos
+- **List View**: Layout linear com altura fixa (600px) e scroll
+- **Alternância**: Botão discreto com ícones ⊞ (grid) e ☰ (lista)
+- **Ícones de Ação**: Na lista, botões são substituídos por ícones intuitivos
 
 ### Armazenamento de Dados
 - Dados salvos no `localStorage` do navegador
@@ -149,7 +166,14 @@ Por questões de segurança dos navegadores modernos:
 
 ## 📝 Changelog
 
-### v5.0 (Atual)
+### v6.0 (Atual)
+- ✅ **Novo Layout de Lista**: Visualização linear compacta com scroll
+- ✅ **Botão Discreto**: Ícone pequeno para alternar visualizações
+- ✅ **Ícones de Ação**: Substituição de botões por ícones na lista
+- ✅ **Scroll Otimizado**: Lista com altura fixa e scroll personalizado
+- ✅ **Layout Responsivo**: Organização otimizada para ambas as visualizações
+
+### v5.0
 - ✅ **Visualização Dupla**: Alternância entre cards e lista
 - ✅ **VS/VSCode**: Escolha entre Visual Studio e VS Code
 - ✅ **Filtro Avançado**: Múltiplos termos por vírgula ou espaço
@@ -180,16 +204,19 @@ Por questões de segurança dos navegadores modernos:
 - Organize todos os seus projetos C# em um local
 - Acesso rápido a projetos através de filtros e tags
 - Abertura direta no Visual Studio ou VS Code
+- Visualização compacta em lista para navegação rápida
 
 ### Equipe de Desenvolvimento
 - Compartilhe a lista de projetos exportando/importando
 - Padronize a organização de projetos
 - Facilite a navegação entre diferentes soluções
+- Use visualização em cards para visão detalhada
 
 ### Gerente de Projetos
 - Visão geral de todos os projetos em desenvolvimento
 - Filtragem por tags para categorizar projetos
 - Acesso rápido a informações de cada projeto
+- Alternância entre visualizações conforme necessidade
 
 ---
 

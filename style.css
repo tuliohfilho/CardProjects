@@ -27,27 +27,6 @@ body {
     margin: 0;
 }
 
-.header-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.view-toggle-btn {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.view-toggle-btn:hover {
-    background-color: #5a6268;
-}
-
 .add-btn {
     background-color: #007bff;
     color: white;
@@ -93,6 +72,54 @@ body {
     min-width: 150px;
 }
 
+.view-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.view-toggle-icon {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-toggle-icon:hover {
+    background-color: #5a6268;
+}
+
+.view-toggle-icon .grid-icon,
+.view-toggle-icon .list-icon {
+    position: absolute;
+    transition: opacity 0.3s ease;
+}
+
+.view-toggle-icon.grid-view .grid-icon {
+    opacity: 1;
+}
+
+.view-toggle-icon.grid-view .list-icon {
+    opacity: 0;
+}
+
+.view-toggle-icon.list-view .grid-icon {
+    opacity: 0;
+}
+
+.view-toggle-icon.list-view .list-icon {
+    opacity: 1;
+}
+
 /* Grid View (Default) */
 .project-list.grid-view {
     display: grid;
@@ -104,58 +131,171 @@ body {
 .project-list.list-view {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-}
-
-.project-list.list-view .project-card {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    background-color: #f8f9fa;
+    gap: 0;
+    max-height: 600px;
+    overflow-y: auto;
     border: 1px solid #e9ecef;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
+    background-color: #fff;
+}
+
+.project-list.list-view::-webkit-scrollbar {
+    width: 8px;
+}
+
+.project-list.list-view::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.project-list.list-view::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.project-list.list-view::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Layout de tabela para lista com 3 colunas */
+.project-list.list-view .project-card {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    gap: 20px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #fff;
+    transition: background-color 0.2s ease;
+    align-items: start;
+}
+
+.project-list.list-view .project-card:last-child {
+    border-bottom: none;
 }
 
 .project-list.list-view .project-card:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background-color: #f8f9fa;
+}
+
+/* Coluna 1: Nome do Projeto, Caminho e Descrição */
+.project-list.list-view .project-card .card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.project-list.list-view .project-card .card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .project-list.list-view .project-card h3 {
-    margin: 0 0 5px 0;
-    font-size: 18px;
-    color: #007bff;
-    min-width: 200px;
+    margin: 0;
+    font-size: 16px;
+    color: #2c3e50;
+    font-weight: bold;
 }
 
 .project-list.list-view .project-card .path {
-    margin: 0 0 5px 0;
-    font-size: 14px;
-    color: #666;
-    min-width: 250px;
+    margin: 0;
+    font-size: 12px;
+    color: #7f8c8d;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.project-list.list-view .project-card p {
-    margin: 0 0 5px 0;
+.project-list.list-view .project-card .description {
+    margin: 0;
     font-size: 14px;
-    flex: 1;
+    color: #34495e;
+    margin-top: 4px;
 }
 
+/* Coluna 2: Tags */
 .project-list.list-view .project-card .tags {
-    margin: 0 15px 0 0;
-    min-width: 150px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-content: flex-start;
+    margin: 0;
 }
 
+.project-list.list-view .project-card .tags span {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+}
+
+.project-list.list-view .project-card .tags span:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Coluna 3: Ações */
 .project-list.list-view .project-card .actions {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    flex-shrink: 0;
+    align-items: flex-end;
 }
 
 .project-list.list-view .project-card .actions button {
-    padding: 6px 12px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
     font-size: 12px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 100px;
+    justify-content: flex-start;
+    font-weight: 500;
+}
+
+.project-list.list-view .project-card .actions button.open-folder {
+    background-color: #28a745;
+    color: white;
+}
+
+.project-list.list-view .project-card .actions button.open-folder:hover {
+    background-color: #218838;
+}
+
+.project-list.list-view .project-card .actions button.open-vs {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.project-list.list-view .project-card .actions button.open-vs:hover {
+    background-color: #5a32a3;
+}
+
+.project-list.list-view .project-card .actions button.edit-btn {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.project-list.list-view .project-card .actions button.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.project-list.list-view .project-card .actions button.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.project-list.list-view .project-card .actions button.delete-btn:hover {
+    background-color: #c82333;
 }
 
 /* Grid View Cards */
@@ -212,13 +352,13 @@ body {
     color: white;
 }
 
-.project-card .actions {
+.project-list.grid-view .project-card .actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
 }
 
-.project-card .actions button {
+.project-list.grid-view .project-card .actions button {
     flex: 1;
     min-width: 120px;
     padding: 10px;
@@ -230,39 +370,39 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.project-card .actions button.open-folder {
+.project-list.grid-view .project-card .actions button.open-folder {
     background-color: #28a745;
     color: white;
 }
 
-.project-card .actions button.open-folder:hover {
+.project-list.grid-view .project-card .actions button.open-folder:hover {
     background-color: #218838;
 }
 
-.project-card .actions button.open-vs {
+.project-list.grid-view .project-card .actions button.open-vs {
     background-color: #6f42c1;
     color: white;
 }
 
-.project-card .actions button.open-vs:hover {
+.project-list.grid-view .project-card .actions button.open-vs:hover {
     background-color: #5a32a3;
 }
 
-.project-card .actions button.edit-btn {
+.project-list.grid-view .project-card .actions button.edit-btn {
     background-color: #ffc107;
     color: #212529;
 }
 
-.project-card .actions button.edit-btn:hover {
+.project-list.grid-view .project-card .actions button.edit-btn:hover {
     background-color: #e0a800;
 }
 
-.project-card .actions button.delete-btn {
+.project-list.grid-view .project-card .actions button.delete-btn {
     background-color: #dc3545;
     color: white;
 }
 
-.project-card .actions button.delete-btn:hover {
+.project-list.grid-view .project-card .actions button.delete-btn:hover {
     background-color: #c82333;
 }
 
@@ -428,10 +568,6 @@ body {
         align-items: stretch;
     }
     
-    .header-actions {
-        justify-content: space-between;
-    }
-    
     .filter-controls {
         flex-direction: column;
         gap: 10px;
@@ -445,23 +581,31 @@ body {
         grid-template-columns: 1fr;
     }
     
+    .project-list.list-view {
+        max-height: 400px;
+    }
+    
     .project-list.list-view .project-card {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .project-list.list-view .project-card .actions {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .project-list.list-view .project-card .actions button {
+        min-width: 80px;
+        font-size: 11px;
+    }
+    
+    .project-list.grid-view .project-card .actions {
         flex-direction: column;
-        align-items: stretch;
     }
     
-    .project-list.list-view .project-card h3,
-    .project-list.list-view .project-card .path,
-    .project-list.list-view .project-card .tags {
-        min-width: auto;
-        margin-bottom: 10px;
-    }
-    
-    .project-card .actions {
-        flex-direction: column;
-    }
-    
-    .project-card .actions button {
+    .project-list.grid-view .project-card .actions button {
         flex: none;
         min-width: auto;
     }
