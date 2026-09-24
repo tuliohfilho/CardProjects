@@ -1,0 +1,170 @@
+---
+title: Guia — 10 pontos para criar bons prompts
+aliases:
+  - Estrutura de um bom prompt
+  - Checklist de prompts
+tags:
+  - ia
+  - prompts
+  - produtividade
+  - consulta
+created: 2026-09-08
+---
+
+# Guia — 10 pontos para criar bons prompts
+
+> [!summary] Ideia principal
+> Quanto menos a IA precisar adivinhar, menor será a chance de ela inventar informações e maior será a possibilidade de entregar uma boa resposta na primeira tentativa.
+
+## Resumo dos 10 pontos
+
+### 1. Contexto da tarefa
+
+Diga **quem a IA deve ser**, qual função ela deve desempenhar e qual é o objetivo geral.
+
+**Exemplo:** “Você é um orientador de carreira especializado em tecnologia.”
+
+### 2. Tom de voz
+
+Explique como a resposta deve soar: objetiva, didática, formal, acolhedora, cautelosa etc. Informe também para qual público ela será escrita.
+
+### 3. Fontes de referência
+
+Forneça documentos, dados, regras de negócio, tabelas ou outras informações que servirão como fonte da verdade. Em assuntos que mudam com frequência, peça a consulta a fontes ou documentações atualizadas.
+
+### 4. Regras de comportamento
+
+Defina claramente o que a IA deve fazer, o que deve evitar e como deve agir quando não souber algo. Inclua regras como “não invente fatos” e “pergunte quando faltar informação”.
+
+### 5. Exemplos
+
+Mostre exemplos de entrada e da saída esperada. Isso ensina o padrão, a estrutura e o nível de detalhe desejados.
+
+### 6. Histórico da conversa
+
+Inclua informações importantes que já foram discutidas. Se o histórico for muito grande, use um resumo fiel para preservar o contexto sem gastar tokens desnecessários.
+
+### 7. Pedido imediato
+
+Depois de apresentar o contexto, diga com clareza o que deve ser feito agora. Use verbos de ação, como “analise”, “compare”, “reescreva” ou “crie”.
+
+### 8. Análise e verificação
+
+Em tarefas complexas, peça para a IA verificar a consistência e conferir o resultado antes de finalizar. Esse passo é opcional em solicitações simples.
+
+### 9. Formato da resposta
+
+Defina idioma, estrutura, tamanho, nível de detalhe e campos obrigatórios. Se pedir uma saída estruturada, explique também o que fazer quando um dado não estiver disponível.
+
+### 10. Início pré-preenchido
+
+Quando a ferramenta permitir, forneça o começo da resposta para induzir o formato desejado, como a abertura de um objeto JSON ou uma tag. É um recurso opcional e não está disponível em todas as ferramentas ou modelos atuais.
+
+---
+
+## Checklist rápido
+
+- [ ] Defini a função ou persona da IA?
+- [ ] Expliquei o objetivo da tarefa?
+- [ ] Determinei o tom e o público?
+- [ ] Forneci os dados e as fontes necessárias?
+- [ ] Criei regras para dúvidas, lacunas e ambiguidades?
+- [ ] Dei exemplos quando o formato era importante?
+- [ ] Incluí ou resumi o histórico relevante?
+- [ ] Fiz um pedido claro e específico?
+- [ ] Pedi verificação, caso a tarefa seja complexa?
+- [ ] Defini o formato da resposta e o tratamento de dados ausentes?
+
+> [!tip] Regra prática
+> Você não precisa usar todos os blocos em toda conversa. Quanto mais complexa, importante ou repetitiva for a tarefa, mais completa deve ser a estrutura do prompt.
+
+---
+
+## Modelo completo de prompt
+
+Copie o bloco abaixo e substitua o conteúdo entre colchetes.
+
+```text
+CONTEXTO E FUNÇÃO
+Você é [persona, função e especialidade].
+Seu objetivo nesta tarefa é [objetivo].
+
+TOM DE VOZ
+Responda de maneira [didática, objetiva, cautelosa, formal etc.].
+Use uma linguagem adequada para [público].
+Não demonstre certeza quando as informações forem insuficientes.
+
+FONTES DE REFERÊNCIA
+Baseie-se nas informações e documentos abaixo:
+[cole os documentos, dados, regras ou contexto]
+
+Quando o assunto puder estar desatualizado, consulte primeiro uma fonte
+ou documentação atualizada. Informe quais fontes utilizou.
+
+REGRAS DE COMPORTAMENTO
+- Não invente fatos, datas, números, nomes ou referências.
+- Se uma informação não estiver no contexto ou nas fontes, diga isso claramente.
+- Se faltar um dado essencial, faça de uma a três perguntas objetivas.
+- Se houver mais de uma interpretação possível, apresente as opções e peça que eu escolha.
+- Se o pedido estiver fora do escopo, informe isso e redirecione a conversa.
+- Não preencha lacunas com suposições sem identificá-las como suposições.
+- Quando utilizar documentos, indique os trechos ou itens que sustentam a resposta.
+
+EXEMPLOS
+Exemplo de entrada:
+[entrada]
+
+Exemplo de saída:
+[saída esperada]
+
+Quando algum campo não for informado:
+[deixe null, omita o campo ou faça uma pergunta]
+
+HISTÓRICO RELEVANTE
+[insira ou resuma as informações importantes da conversa]
+
+Preserve decisões, preferências e restrições importantes.
+Se o histórico estiver muito longo, use apenas um resumo fiel.
+
+PEDIDO IMEDIATO
+Agora, faça o seguinte:
+[descreva claramente a tarefa]
+
+VERIFICAÇÃO
+Antes de responder:
+- confira se entendeu corretamente o pedido;
+- verifique se a resposta respeita todas as regras;
+- confira se as afirmações estão apoiadas nas fontes;
+- identifique qualquer informação incerta ou ausente.
+
+FORMATO DA RESPOSTA
+- Idioma: português do Brasil
+- Estrutura: [tópicos, tabela, JSON ou texto corrido]
+- Nível de detalhe: [resumido, intermediário ou aprofundado]
+- Tamanho máximo: [limite]
+- Campos obrigatórios: [campos]
+- Para dados ausentes: [use null, não preencha ou pergunte]
+
+INÍCIO DA RESPOSTA — OPCIONAL
+Se a ferramenta permitir, comece exatamente assim:
+[início desejado da resposta]
+```
+
+---
+
+## Bloco antialucinação
+
+Use este trecho sozinho ou dentro de qualquer prompt:
+
+```text
+Não invente fatos. Se a informação não estiver no contexto fornecido,
+diga que não possui dados suficientes. Se faltar algum dado essencial,
+faça de uma a três perguntas objetivas. Se houver ambiguidade, apresente
+as opções e peça que eu escolha. Quando houver documentos de referência,
+baseie a resposta neles e indique os trechos ou itens utilizados.
+```
+
+## Fórmula curta
+
+> **Função + objetivo + contexto + fontes + regras + exemplos + histórico + pedido + verificação + formato**
+
